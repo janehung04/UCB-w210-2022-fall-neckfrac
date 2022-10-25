@@ -1,0 +1,54 @@
+10% of data
+======== Epoch: 1/5 ========
+Training...
+======== Epoch: 1/5 ========
+Training...
+Train Mean Loss: 0.7593835592269897
+Train Mean Comp Loss: 5.342292785644531
+~~~ Train Time: 17.468 mins ~~~
+Validation...
+Valid Mean Loss: 0.7618534564971924
+Valid Mean Comp Loss: 6.978818893432617
+Valid AUC: 0.4531300576163656
+~~~ Valid Time: 3.827 mins ~~~
+Saving model => densenet121_baseline_best_fold0_2a1ca668-540d-11ed-abb4-aa0cb2e0f96a.pth
+======== Epoch: 2/5 ========
+Training...
+Train Mean Loss: 0.7648207545280457
+Train Mean Comp Loss: 6.9758172035217285
+~~~ Train Time: 17.05 mins ~~~
+Validation...
+Valid Mean Loss: 0.7645602822303772
+Valid Mean Comp Loss: 6.684743881225586
+Valid AUC: 0.2746811678643102
+~~~ Valid Time: 3.639 mins ~~~
+======== Epoch: 3/5 ========
+Training...
+Train Mean Loss: 0.7627261281013489
+Train Mean Comp Loss: 6.579058647155762
+~~~ Train Time: 17.264 mins ~~~
+Validation...
+Valid Mean Loss: 0.7645552754402161
+Valid Mean Comp Loss: 6.556018829345703
+Valid AUC: 0.3310351524567877
+~~~ Valid Time: 3.715 mins ~~~
+======== Epoch: 4/5 ========
+Training...
+Train Mean Loss: 0.7612807154655457
+Train Mean Comp Loss: 7.012375831604004
+~~~ Train Time: 18.005 mins ~~~
+Validation...
+Valid Mean Loss: 0.764563798904419
+Valid Mean Comp Loss: 6.8017802238464355
+Valid AUC: 0.3185084482423771
+~~~ Valid Time: 3.846 mins ~~~
+======== Epoch: 5/5 ========
+Training...
+Train Mean Loss: 0.7612863779067993
+Train Mean Comp Loss: 7.224855899810791
+~~~ Train Time: 18.217 mins ~~~
+Validation...
+Valid Mean Loss: 0.7645638585090637
+Valid Mean Comp Loss: 7.132476806640625
+Valid AUC: 0.3721110895319479
+~~~ Valid Time: 3.8 mins ~~~
