@@ -170,7 +170,7 @@ def get_vertebrae_crosstab(model_results):
 
     return crosstab_predict[["actual_vertebrae", "predicted_vertebrae"]].value_counts(
         dropna=False, normalize=True
-    ).map(lambda x: "{:.2f}%".format(x*100))
+    ).map(lambda x: "{:.2f}%".format(x*100)).reset_index(name='proportion')
 
 
 def get_sagittal_view(bad_patients):
