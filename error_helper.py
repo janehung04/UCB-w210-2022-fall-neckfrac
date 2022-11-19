@@ -7,7 +7,12 @@ error_helper.get_model_results(f'./{CHECKPOINT_PATH[2:-4]}_train_results_tilted.
 """
 
 import pandas as pd
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    accuracy_score,
+    fbeta_score,
+)
 import numpy as np
 import matplotlib as mpl
 import matplotlib.image as mpimg
@@ -32,10 +37,24 @@ def define_eval_metrics(df):
     fpr = fp / (fp + tn)
     fnr = fn / (fn + tp)
 
+    accuracy = np.round(
+        accuracy_score(
+            y_true=df.actual,
+            y_pred=df.fractured,
+        )
+        * 100
+    )
+
+    f1 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=1) * 100)
+
+    f05 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=0.5) * 100)
+
+    f2 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=2) * 100)
+
     pred_pos_rate = np.round(np.mean(df.fractured == 1) * 100)
     actual_pos_rate = np.round(np.mean(df.actual == 1) * 100)
 
-    return [recall, precision, tn, fp, fn, tp, fpr, fnr]
+    return [recall, precision, tn, fp, fn, tp, fpr, fnr, accuracy, f1, f05, f2]
 
 
 def eval_model(df):
@@ -63,6 +82,10 @@ def eval_model(df):
         "tp",
         "fpr",
         "fnr",
+        "accuracy",
+        "f1",
+        "f05",
+        "f2",
     ]
 
     eval_metrics["patient_level"] = define_eval_metrics(patient_df)
@@ -114,6 +137,10 @@ def eval_model(df):
                 "precision",
                 "fpr",
                 "fnr",
+                "accuracy",
+                "f1",
+                "f05",
+                "f2",
             ]
         ),
         ["patient_level", "vertebrae_level", "C1", "C2", "C3", "C4", "C5", "C6", "C7"],
@@ -124,6 +151,10 @@ def eval_model(df):
                 "precision",
                 "fpr",
                 "fnr",
+                "accuracy",
+                "f1",
+                "f05",
+                "f2",
             ]
         ),
         ["patient_level", "vertebrae_level", "C1", "C2", "C3", "C4", "C5", "C6", "C7"],
@@ -168,18 +199,28 @@ def get_vertebrae_crosstab(model_results):
         how="outer",
     )
 
-    return crosstab_predict[["actual_vertebrae", "predicted_vertebrae"]].value_counts(
-        dropna=False, normalize=True
-    ).map(lambda x: "{:.2f}%".format(x*100)).reset_index(name='proportion')
+    return (
+        crosstab_predict[["actual_vertebrae", "predicted_vertebrae"]]
+        .value_counts(dropna=False, normalize=True)
+        .map(lambda x: "{:.2f}%".format(x * 100))
+        .reset_index(name="proportion")
+    )
 
 
 def get_sagittal_view(bad_patients):
-    #visualize the sagittal vies
+    # visualize the sagittal vies
 
-    # load images from input 
-    sagittal_images = '/root/input/rsna-2022-cervical-spine-fracture-detection/sagittal_train_images/*.png'
-    random_images = random.choices([image for image in glob(sagittal_images) if image.split('/')[-1][:-4] in bad_patients], k = 9 )
-    
+    # load images from input
+    sagittal_images = "/root/input/rsna-2022-cervical-spine-fracture-detection/sagittal_train_images/*.png"
+    random_images = random.choices(
+        [
+            image
+            for image in glob(sagittal_images)
+            if image.split("/")[-1][:-4] in bad_patients
+        ],
+        k=9,
+    )
+
     sagittal_patient_id = []
     for i in random_images:
         sagittal_patient_id.append(i.split(".")[-2])
@@ -188,21 +229,24 @@ def get_sagittal_view(bad_patients):
     images = [mpimg.imread(image) for image in random_images]
 
     # Plot images
-    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(24,12))
-    fig.suptitle(f'Sagittal View - Randomly Pick 9 Bad Predictions', weight="bold", size=20)
+    fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(24, 12))
+    fig.suptitle(
+        f"Sagittal View - Randomly Pick 9 Bad Predictions", weight="bold", size=20
+    )
 
     start = 0
-    for i in range(start,start+9):
+    for i in range(start, start + 9):
         img = images[i]
-    #     file = files[i]
+        #     file = files[i]
         patient_id = sagittal_patient_id[i]
         # Plot the image
-        x = (i-start) // 3
-        y = (i-start) % 3
+        x = (i - start) // 3
+        y = (i - start) % 3
 
         axes[x, y].imshow(img, cmap="bone")
-        axes[x, y].set_title(f"patient_id: {patient_id}", fontsize=14, weight='bold')
-        axes[x, y].axis('off')
+        axes[x, y].set_title(f"patient_id: {patient_id}", fontsize=14, weight="bold")
+        axes[x, y].axis("off")
+
 
 def get_worst_patients(model_results):
     # use competition loss function to define worst patients?
@@ -210,12 +254,16 @@ def get_worst_patients(model_results):
         ~model_results.row_id.str.contains("patient_overall")
     ].copy()
     model_results_vert["row_id"] = model_results_vert.row_id.apply(
-        lambda x: x.split("_")[0])
-    
-    bad_patients = model_results_vert.loc[(model_results_vert.actual == 1) & (model_results_vert.fractured == 0),'row_id'].unique()
-    
+        lambda x: x.split("_")[0]
+    )
+
+    bad_patients = model_results_vert.loc[
+        (model_results_vert.actual == 1) & (model_results_vert.fractured == 0), "row_id"
+    ].unique()
+
     get_sagittal_view(bad_patients)
-        
+
+
 # Get overall model performance
 def get_model_results(fname):
 
@@ -226,6 +274,5 @@ def get_model_results(fname):
     display(eval_model(model_results))
 
     display(get_vertebrae_crosstab(model_results))
-    
+
     get_worst_patients(model_results)
-    
