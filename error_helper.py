@@ -8,10 +8,11 @@ error_helper.get_model_results(f'./{CHECKPOINT_PATH[2:-4]}_train_results_tilted.
 
 import pandas as pd
 from sklearn.metrics import (
-    classification_report,
     confusion_matrix,
     accuracy_score,
     fbeta_score,
+    recall_score,
+    precision_score,
 )
 import numpy as np
 import matplotlib as mpl
@@ -19,23 +20,22 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import random
 from glob import glob
+from IPython.display import display
 
 pd.set_option("mode.chained_assignment", None)
 
 
 # Helper functions
 def define_eval_metrics(df):
-    cls_report = classification_report(
-        y_true=df.actual, y_pred=df.fractured, zero_division=0, output_dict=True
+    recall = np.round(recall_score(y_true=df.actual, y_pred=df.fractured) * 100, 2)
+    precision = np.round(
+        precision_score(y_true=df.actual, y_pred=df.fractured) * 100, 2
     )
-
-    recall = np.round(cls_report["1"]["recall"] * 100)
-    precision = np.round(cls_report["1"]["precision"] * 100)
 
     tn, fp, fn, tp = confusion_matrix(y_true=df.actual, y_pred=df.fractured).ravel()
 
-    fpr = fp / (fp + tn)
-    fnr = fn / (fn + tp)
+    fpr = np.round(fp / (fp + tn) * 100, 2)
+    fnr = np.round(fn / (fn + tp) * 100, 2)
 
     accuracy = np.round(
         accuracy_score(
@@ -45,29 +45,29 @@ def define_eval_metrics(df):
         * 100
     )
 
-    f1 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=1) * 100)
+    f1 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=1) * 100, 2)
 
-    f05 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=0.5) * 100)
+    f05 = np.round(
+        fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=0.5) * 100, 2
+    )
 
-    f2 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=2) * 100)
-
-    pred_pos_rate = np.round(np.mean(df.fractured == 1) * 100)
-    actual_pos_rate = np.round(np.mean(df.actual == 1) * 100)
+    f2 = np.round(fbeta_score(y_true=df.actual, y_pred=df.fractured, beta=2) * 100, 2)
 
     return [recall, precision, tn, fp, fn, tp, fpr, fnr, accuracy, f1, f05, f2]
 
 
 def eval_model(df):
-
-    try:
-        print(
-            f"Average inference time : {inference_time/(len(df)/8):.3f} s per patient"
-        )
-    except:
-        print("No time data available")
+    """
+    Need fractured, row_id, actual columns
+    """
+    # try:
+    #     print(
+    #         f"Average inference time : {inference_time/(len(df)/8):.3f} s per patient"
+    #     )
+    # except:
+    #     print("No time data available")
 
     # initialize patient and vertebrae df
-    df["fractured"] = round(df.fractured)
     patient_df = df[df.row_id.str.contains("patient_overall")]
     vert_df = df[~df.row_id.str.contains("patient_overall")]
 
@@ -88,6 +88,7 @@ def eval_model(df):
         "f2",
     ]
 
+    # get eval metrics at overall patient and overall vertebrae
     eval_metrics["patient_level"] = define_eval_metrics(patient_df)
     eval_metrics["vertebrae_level"] = define_eval_metrics(vert_df)
 
@@ -100,8 +101,6 @@ def eval_model(df):
         eval_metrics[vertebra] = define_eval_metrics(
             vert_df.loc[vert_df.vertebrae == vertebra]
         )
-
-    # issues with patient overall not match patient vertebrae prediction?
 
     output = pd.DataFrame.from_dict(eval_metrics)
 
@@ -166,6 +165,7 @@ def eval_model(df):
 
 
 def get_vertebrae_crosstab(model_results):
+
     model_results_vert = model_results[
         ~model_results.row_id.str.contains("patient_overall")
     ].copy()
@@ -182,10 +182,9 @@ def get_vertebrae_crosstab(model_results):
         model_results_vert["actual"] == 1, "actual_vertebrae"
     ] = model_results_vert.loc[model_results_vert["actual"] == 1, "vertebrae"]
     model_results_vert.loc[
-        np.round(model_results_vert["fractured"]) == 1, "predicted_vertebrae"
-    ] = model_results_vert.loc[
-        np.round(model_results_vert["fractured"]) == 1, "vertebrae"
-    ]
+        model_results_vert["fractured"] == 1,
+        "predicted_vertebrae",
+    ] = model_results_vert.loc[model_results_vert["fractured"] == 1, "vertebrae"]
 
     crosstab_predict = pd.merge(
         model_results_vert[model_results_vert.actual_vertebrae.notnull()]
@@ -237,7 +236,6 @@ def get_sagittal_view(bad_patients):
     start = 0
     for i in range(start, start + 9):
         img = images[i]
-        #     file = files[i]
         patient_id = sagittal_patient_id[i]
         # Plot the image
         x = (i - start) // 3
@@ -265,14 +263,21 @@ def get_worst_patients(model_results):
 
 
 # Get overall model performance
-def get_model_results(fname):
+def get_model_results(fname,verbose=True):
 
     # CHECKPOINT_PATH='./densenet121_baseline_best_fold0_2a1ca668-540d-11ed-abb4-aa0cb2e0f96a.pth'
     # model_results = pd.read_csv(f'./{CHECKPOINT_PATH[2:-4]}_train_results.csv')
     model_results = pd.read_csv(fname)
 
-    display(eval_model(model_results))
+    if verbose:
+        print(eval_model(model_results))
+        print(get_vertebrae_crosstab(model_results))
 
-    display(get_vertebrae_crosstab(model_results))
+    eval_model(model_results).to_csv("eval_model.csv")
+    get_vertebrae_crosstab(model_results).to_csv("vertebrae_crosstab.csv")
 
-    get_worst_patients(model_results)
+    try:
+        get_worst_patients(model_results)
+    except Exception as e:
+        print("Error with worst patients code")
+        print(e)
