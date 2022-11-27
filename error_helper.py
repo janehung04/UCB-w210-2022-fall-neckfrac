@@ -18,11 +18,13 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 import random
 from glob import glob
 
 pd.set_option("mode.chained_assignment", None)
-
+sns.set_style("whitegrid")
 
 # Helper functions
 def define_eval_metrics(df):
@@ -248,6 +250,18 @@ def get_shifts_in_predictions(model_results):
     )
     print(crosstab_lst["all_pred_inferior"].value_counts(normalize=True))
 
+    # Plot
+    plt.figure()
+    ax = sns.countplot(data=crosstab_lst, x="all_pred_inferior")
+    rel_val = np.round(
+        (crosstab_lst["all_pred_inferior"].value_counts(normalize=True) * 100)
+    ).apply(lambda x: f"{int(x)}%")
+    ax.bar_label(container=ax.containers[0], labels=rel_val.values)
+    plt.xlabel("All Predicted Fractures Dectected in Inferior Vertebrae?")
+    plt.ylabel("Frequency")
+    plt.title("Frequency that model detects inferior fractures instead")
+    plt.show()
+
     crosstab_lst["any_pred_inferior"] = crosstab_lst.apply(
         lambda row: any(
             actual_el < pred_el
@@ -319,7 +333,17 @@ def get_fracture_counts(model_results):
                 crosstab_lst.actual_vertebrae == el, "predicted_vertebrae"
             ].describe()
         )
-        
+    plt.figure()
+    sns.lineplot(data=crosstab_lst, x="actual_vertebrae", y="predicted_vertebrae")
+    plt.title(
+        """
+        Average predicted fracture count trends higher than actual fracture count
+        but underpredicts for higher actual fracture count.
+        """
+    )
+    plt.xlabel("Actual Vertebrae Fracture Count")
+    plt.ylabel("Predicted Vertebrae Fracture Count")
+    plt.show()
 
 
 def get_sagittal_view(bad_patients):
@@ -391,17 +415,20 @@ def get_model_results(fname, verbose=True):
         print(eval_model(model_results))
         print(get_vertebrae_crosstab(model_results))
         print(get_shifts_in_predictions(model_results))
+        print(get_fracture_counts(model_results))
+
+        output_fname = "vertebrae_crosstab.csv"
+        get_vertebrae_crosstab(model_results).to_csv(output_fname)
+        print(f"Vertebrae crosstab results stored in {output_fname}")
+
+        try:
+            get_worst_patients(model_results)
+        except Exception as e:
+            print("Error with worst patients code")
+            print(e)
 
     output_fname = "eval_model.csv"
     eval_model(model_results).to_csv(output_fname)
     print(f"Evaluation results stored in {output_fname}")
 
-    output_fname = "vertebrae_crosstab.csv"
-    get_vertebrae_crosstab(model_results).to_csv(output_fname)
-    print(f"Vertebrae crosstab results stored in {output_fname}")
 
-    try:
-        get_worst_patients(model_results)
-    except Exception as e:
-        print("Error with worst patients code")
-        print(e)
