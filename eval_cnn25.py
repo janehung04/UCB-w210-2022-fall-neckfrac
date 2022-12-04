@@ -35,7 +35,7 @@ def get_eval_model(df_iter, **kwargs):
 # Identify the best classification threshold for each vertebrae
 def get_best_classification(vert):
     global threshold, best_threshold
-    best_f2 = 0.0
+    best_f1 = 0.0
     for curr_threshold in np.linspace(0.15, 0.5, 10):
 
         # For each vertebrae, try a new classification threshold
@@ -52,16 +52,16 @@ def get_best_classification(vert):
             "./eval_model.csv",
         )
 
-        curr_f2 = eval_model.loc[eval_model.eval_metric == "f2", "C" + str(vert)]
-        curr_f2 = float(curr_f2.values[0][:-1])
+        curr_f1 = eval_model.loc[eval_model.eval_metric == "f1", "C" + str(vert)]
+        curr_f1 = float(curr_f1.values[0][:-1])
 
         # Check if the model results are better than what we've stored
-        if curr_f2 > best_f2:
-            best_f2 = curr_f2
+        if curr_f1 > best_f1:
+            best_f1 = curr_f1
             best_threshold.loc[
                 best_threshold.vert == vert, "threshold"
             ] = curr_threshold
-            print(f"Best threshold is {curr_threshold} for C{vert}. F2 is {curr_f2}")
+            print(f"Best threshold is {curr_threshold} for C{vert}. f1 is {curr_f1}")
 
 
 def apply_best_threshold(best_threshold):

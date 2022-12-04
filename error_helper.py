@@ -260,6 +260,7 @@ def get_shifts_in_predictions(model_results):
     plt.xlabel("All Predicted Fractures Dectected in Inferior Vertebrae?")
     plt.ylabel("Frequency")
     plt.title("Frequency that model detects inferior fractures instead")
+    plt.savefig("inferior_count.png", transparent=True)
     plt.show()
 
     crosstab_lst["any_pred_inferior"] = crosstab_lst.apply(
@@ -283,6 +284,19 @@ def get_shifts_in_predictions(model_results):
         axis=1,
     )
     print(crosstab_lst["all_pred_superior"].value_counts(normalize=True))
+
+    # Plot
+    plt.figure()
+    ax = sns.countplot(data=crosstab_lst, x="all_pred_superior")
+    rel_val = np.round(
+        (crosstab_lst["all_pred_superior"].value_counts(normalize=True) * 100)
+    ).apply(lambda x: f"{int(x)}%")
+    ax.bar_label(container=ax.containers[0], labels=rel_val.values)
+    plt.xlabel("All Predicted Fractures Dectected in Superior Vertebrae?")
+    plt.ylabel("Frequency")
+    plt.title("Frequency that model detects superior fractures instead")
+    plt.savefig("superior_count.png", transparent=True)
+    plt.show()
 
     crosstab_lst["any_pred_superior"] = crosstab_lst.apply(
         lambda row: any(
@@ -335,14 +349,9 @@ def get_fracture_counts(model_results):
         )
     plt.figure()
     sns.lineplot(data=crosstab_lst, x="actual_vertebrae", y="predicted_vertebrae")
-    plt.title(
-        """
-        Average predicted fracture count trends higher than actual fracture count
-        but underpredicts for higher actual fracture count.
-        """
-    )
     plt.xlabel("Actual Vertebrae Fracture Count")
     plt.ylabel("Predicted Vertebrae Fracture Count")
+    plt.savefig("fracture_count.png", transparent=True)
     plt.show()
 
 
@@ -430,5 +439,3 @@ def get_model_results(fname, verbose=True):
     output_fname = "eval_model.csv"
     eval_model(model_results).to_csv(output_fname)
     print(f"Evaluation results stored in {output_fname}")
-
-
