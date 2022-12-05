@@ -19,7 +19,7 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 
 ## Dataset
 
-![Image of Dataset](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Images/dataset.png)
+![Image of Dataset](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/dataset.jpg)
 
 **Public data provided by RSNA (Radiological Society of North America)** [LINK](https://www.kaggle.com/competitions/rsna-2022-cervical-spine-fracture-detection)
 
@@ -35,11 +35,11 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 
 ## Model 1:
 
-![Model1](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Images/model_1.png)
+![Model1](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/model_1.jpg)
 
 ## Model 2:
 
-![Model2](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Images/model_2.png)
+![Model2](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/model_2.jpg)
 
 ## Evaluation Result:
 
