@@ -1,9 +1,9 @@
-import error_helper
+import Evaluation.error_helper as error_helper
 import pandas as pd
 import numpy as np
 
 import importlib
-importlib.reload(error_helper)
+importlib.reload(Evaluation.error_helper)
 
 
 def get_eval_model(df_iter, **kwargs):
@@ -24,11 +24,11 @@ def get_eval_model(df_iter, **kwargs):
     df_iter = pd.concat(
         [df_iter[["row_id", "actual", "fractured"]], patient_overall], axis=0
     )
-    df_iter.to_csv("full_model_validation/valid_folds_all_fmt.csv")
+    df_iter.to_csv("Evaluation/full_model_validation/valid_folds_all_fmt.csv")
 
     # Get model results
     error_helper.get_model_results(
-        "full_model_validation/valid_folds_all_fmt.csv", verbose=kwargs["verbose"]
+        "Evaluation/full_model_validation/valid_folds_all_fmt.csv", verbose=kwargs["verbose"]
     )
 
 
@@ -73,7 +73,7 @@ def apply_best_threshold(best_threshold):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("full_model_validation/valid_folds_all.csv")
+    df = pd.read_csv("Evaluation/full_model_validation/valid_folds_all.csv")
 
     # Define thresholds for [C1, C2, C3, C4, C5, C6, C7]
     threshold = pd.DataFrame({"vert": range(1, 8), "threshold": [0.5] * 7})
@@ -83,5 +83,4 @@ if __name__ == "__main__":
         get_best_classification(vert=vert)
 
     print(best_threshold)
-
     apply_best_threshold(best_threshold)

@@ -34,7 +34,6 @@ def define_eval_metrics(df):
     )
 
     tn, fp, fn, tp = confusion_matrix(y_true=df.actual, y_pred=df.fractured).ravel()
-
     fpr = np.round(fp / (fp + tn) * 100, 2)
     fnr = np.round(fn / (fn + tp) * 100, 2)
 
@@ -161,7 +160,6 @@ def eval_model(df):
     ].applymap(
         "{:.2f}%".format
     )
-
     return output
 
 

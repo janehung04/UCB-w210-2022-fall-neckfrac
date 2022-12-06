@@ -1,13 +1,14 @@
-import error_helper
+import Evaluation.error_helper as error_helper
 import pandas as pd
 
 import importlib
 
-importlib.reload(error_helper)
+importlib.reload(Evaluation.error_helper)
 
 
 if __name__ == "__main__":
-    df = pd.read_csv("ensemble_model/ensemble_overall.csv")
+    fname = "ensemble_overall_f1"
+    df = pd.read_csv(f"Evaluation/ensemble_model/{fname}.csv")
 
     df["row_id"] = df.StudyInstanceUID + "_" + df.prediction_type
 
@@ -15,9 +16,9 @@ if __name__ == "__main__":
         columns={"ensemble_label": "fractured", "label": "actual"}
     )
 
-    df.to_csv("ensemble_model/ensemble_overall_fmt.csv")
+    df.to_csv(f"Evaluation/ensemble_model/{fname}_fmt.csv")
 
     # Get model results
     error_helper.get_model_results(
-        "ensemble_model/ensemble_overall_fmt.csv", verbose=True
+        f"Evaluation/ensemble_model/{fname}_fmt.csv", verbose=True
     )
