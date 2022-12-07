@@ -10,7 +10,9 @@ Presentation
 
 [Website](https://groups.ischool.berkeley.edu/NeckFrac/)
 
-[Demo]
+[Demo] 
+
+Please refer to this [repo](https://github.com/janehung04/neckfrac-streamlit-app) for app development code.
 
 ## Goal
 - Build an end to end data pipeline to identify cervical spine fracture probabality
