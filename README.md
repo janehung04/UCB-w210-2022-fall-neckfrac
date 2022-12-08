@@ -48,6 +48,9 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 
 ## Evaluation Result
 
+![eveluation1](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/performance%20(2).png)
+![eveluation2](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/performance%20(1).png)
+![eveluation3](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Image/performance%20(3).png)
 
 ## Business Impact
 
