@@ -4,13 +4,14 @@
 "NeckFrac", a deep learning model trained on over 2000 patients Cervical Spine CT scans, aimed to quickly detect and determine the location of vertebral fractures, which is essential to prevent neurologic deterioration and paralysis after trauma.
 
 Presentation 
-* [Research Problem & EDA] 
-* [Image Preprocess & Augmentation] 
-* Final Ensembled Model
+* [Research Problem & EDA](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Presentations/Presentation%201.pdf)
+* [Image Preprocess & Augmentation](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Presentations/Presentation%202.pdf)
+* Final Ensembled Model(https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Presentations/Presentation%203.pdf)
 
 [Website](https://groups.ischool.berkeley.edu/NeckFrac/)
 
-[Demo] 
+[Demo with sagittal view](https://youtu.be/asOxDZ5dA0g)
+[Demo with bounding boxes](https://youtu.be/ZtDY_AgA1X0)
 
 Please refer to this [repo](https://github.com/janehung04/neckfrac-streamlit-app) for app development code.
 
