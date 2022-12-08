@@ -48,6 +48,7 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 
 ## Evaluation Result
 
+
 ## Business Impact
 
 
@@ -57,5 +58,5 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 |  AIDOC model  | 76%   |   3-8 min |
 | NeckFrac   | 98% |    2 min |
 
-
+Compared to Small et al. (2021), we outperform radiologists and an industry competitor (AIDOC) on recall/sensitivity and inference time. Our model would be best utilized in situations where the radiologist would like to sift through predicted negatives quickly and focus on predicted positives.
 
