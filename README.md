@@ -38,6 +38,7 @@ NeckFrac is an intricate deep learning model dedicated to cervical spine fractur
 * Experts labeled the annotation to indicate the presence, vertebral level and location of any cervical spine fractures.
 
 ## Pipeline
+![Pipeline](https://github.com/janehung04/UCB-w210-2022-fall-neckfrac/blob/master/Presentations/pipeline_2.gif)
 
 ## Model 1 
 
